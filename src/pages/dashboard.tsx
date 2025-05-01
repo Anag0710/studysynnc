@@ -6,11 +6,14 @@ import StudyTimer from '../components/study/StudyTimer';
 import CalendarLog from '../components/study/CalendarLog';
 import Leaderboard from '../components/study/Leaderboard';
 import ReminderModal from '../components/study/ReminderModal';
+import GroupActions from '../components/study/GroupActions';
 import { useAuth } from '../contexts/AuthContext';
+import { useGroup } from '../contexts/GroupContext';
 import { Log } from '../models/Log';
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
+  const { hasGroup } = useGroup();
   const router = useRouter();
   const [logs, setLogs] = useState<Log[]>([]);
   const [groupMembers, setGroupMembers] = useState<any[]>([]);
@@ -19,22 +22,22 @@ export default function Dashboard() {
   const [confidence, setConfidence] = useState<number>(5);
   const [showReminder, setShowReminder] = useState(false);
   const [timerMinutes, setTimerMinutes] = useState(0);
-  
+
   useEffect(() => {
     if (!loading && !user) {
       router.replace('/login');
     }
   }, [user, loading, router]);
-  
+
   useEffect(() => {
     // In a real app, fetch logs from API
     if (user) {
       // Fetch user's logs
       // fetchLogs();
-      
+
       // Fetch group members
       // fetchGroupMembers();
-      
+
       // For now, we'll use dummy data
       setLogs([
         {
@@ -44,10 +47,10 @@ export default function Dashboard() {
           date: '2025-04-30',
           topics: ['React', 'NextJS'],
           timeStudied: 120,
-          confidence: 7
-        }
+          confidence: 7,
+        },
       ]);
-      
+
       setGroupMembers([
         {
           id: user.id,
@@ -55,7 +58,7 @@ export default function Dashboard() {
           totalTime: 120,
           streak: 3,
           topicsCount: 2,
-          passwordHash: ''
+          passwordHash: '',
         },
         {
           id: '2',
@@ -63,14 +66,14 @@ export default function Dashboard() {
           totalTime: 90,
           streak: 5,
           topicsCount: 3,
-          passwordHash: ''
-        }
+          passwordHash: '',
+        },
       ]);
-      
+
       // Check if user has logged study time today
       const today = new Date().toISOString().split('T')[0];
-      const hasLoggedToday = logs.some(log => log.date === today);
-      
+      const hasLoggedToday = logs.some((log) => log.date === today);
+
       // Show reminder if user hasn't logged today and it's evening time
       const currentHour = new Date().getHours();
       if (!hasLoggedToday && currentHour >= 19) {
@@ -78,12 +81,12 @@ export default function Dashboard() {
         const timer = setTimeout(() => {
           setShowReminder(true);
         }, 5000);
-        
+
         return () => clearTimeout(timer);
       }
     }
   }, [user, logs]);
-  
+
   const handleTimerFinish = async (minutes: number) => {
     if (minutes < 1) {
       alert('Study session too short to record.');
@@ -97,8 +100,11 @@ export default function Dashboard() {
   const handleLogSubmit = () => {
     try {
       // Here you would save the study session to your database
-      const topicsList = topics.split(',').map(t => t.trim()).filter(t => t !== '');
-      
+      const topicsList = topics
+        .split(',')
+        .map((t) => t.trim())
+        .filter((t) => t !== '');
+
       // For now, just add it to the current logs
       const today = new Date().toISOString().split('T')[0];
       const newLog: Log = {
@@ -108,9 +114,9 @@ export default function Dashboard() {
         date: today,
         topics: topicsList.length > 0 ? topicsList : ['Study Session'],
         timeStudied: timerMinutes,
-        confidence: confidence
+        confidence: confidence,
       };
-      
+
       setLogs([...logs, newLog]);
       setLogFormOpen(false);
       setTopics('');
@@ -120,16 +126,16 @@ export default function Dashboard() {
       console.error('Failed to save study session', error);
     }
   };
-  
+
   const handleReminderClose = () => {
     setShowReminder(false);
   };
-  
+
   const handleLogNow = () => {
     setShowReminder(false);
     setLogFormOpen(true);
   };
-  
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -137,11 +143,17 @@ export default function Dashboard() {
       </div>
     );
   }
-  
+
   if (!user) {
-    return null;
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-8">
+          <p>Please login to access the dashboard.</p>
+        </div>
+      </Layout>
+    );
   }
-  
+
   return (
     <Layout>
       <Head>
@@ -149,17 +161,20 @@ export default function Dashboard() {
       </Head>
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">Study Dashboard</h1>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <StudyTimer onFinish={handleTimerFinish} />
-            
+
             {logFormOpen && (
               <div className="mt-6 bg-white p-6 rounded-lg shadow-md">
                 <h2 className="text-xl font-bold mb-4">Log Study Session</h2>
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="topics" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="topics"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Topics (comma separated)
                     </label>
                     <input
@@ -171,9 +186,12 @@ export default function Dashboard() {
                       placeholder="React, TypeScript, CSS"
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="confidence" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="confidence"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Confidence Level (1-10): {confidence}
                     </label>
                     <input
@@ -186,7 +204,7 @@ export default function Dashboard() {
                       className="mt-1 block w-full"
                     />
                   </div>
-                  
+
                   <div className="flex justify-end">
                     <button
                       onClick={() => setLogFormOpen(false)}
@@ -204,26 +222,49 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
-            
+
             <div className="mt-6">
               <h2 className="text-2xl font-bold mb-4">Your Study Calendar</h2>
               <CalendarLog logs={logs} onSelectDate={(date) => console.log(date)} />
             </div>
           </div>
-          
-          <div>
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-2xl font-bold mb-4">Group Leaderboard</h2>
-              <Leaderboard users={groupMembers} />
+
+          <div className="space-y-8">
+            <div>
+              <h2 className="text-xl font-bold mb-4">Your Study Group</h2>
+              <GroupActions />
+            </div>
+
+            {hasGroup && (
+              <Leaderboard />
+            )}
+
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-xl font-bold mb-4">Quick Stats</h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-blue-50 rounded-lg p-4 text-center">
+                  <p className="text-sm text-gray-600">Today</p>
+                  <p className="text-2xl font-bold text-blue-700">2 hrs</p>
+                </div>
+                <div className="bg-green-50 rounded-lg p-4 text-center">
+                  <p className="text-sm text-gray-600">This Week</p>
+                  <p className="text-2xl font-bold text-green-700">12 hrs</p>
+                </div>
+                <div className="bg-purple-50 rounded-lg p-4 text-center">
+                  <p className="text-sm text-gray-600">Streak</p>
+                  <p className="text-2xl font-bold text-purple-700">5 days</p>
+                </div>
+                <div className="bg-yellow-50 rounded-lg p-4 text-center">
+                  <p className="text-sm text-gray-600">Rank</p>
+                  <p className="text-2xl font-bold text-yellow-700">#3</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        
+
         {showReminder && (
-          <ReminderModal 
-            onClose={handleReminderClose} 
-            onLogNow={handleLogNow} 
-          />
+          <ReminderModal onClose={handleReminderClose} onLogNow={handleLogNow} />
         )}
       </div>
     </Layout>
