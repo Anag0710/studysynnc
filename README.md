@@ -1,16 +1,27 @@
-# My Next.js App
+# StudySyncc
 
-This is a simple Next.js application that serves as a starting point for building web applications using React and TypeScript.
+<p align="center">
+  <img src="public/images/logo.jpg" alt="StudySyncc Logo" width="200"/>
+</p>
+
+A collaborative study tracking and productivity application built with Next.js and TypeScript. StudySyncc helps students track study time, collaborate in groups, and maintain motivation through challenges and leaderboards.
+
+## Features
+
+- **Study Timer**: Track your study sessions in real-time
+- **Calendar Log**: View your study history and patterns
+- **Group Collaboration**: Create and join study groups
+- **Leaderboard**: Compete with friends to stay motivated
+- **Manual Logging**: Add study sessions manually when you forget to use the timer
+- **Reminders**: Set study reminders to stay on track
 
 ## Getting Started
-
-To get started with this project, follow the instructions below.
 
 ### Prerequisites
 
 Make sure you have the following installed:
 
-- Node.js (version 12 or later)
+- Node.js (version 14 or later)
 - npm (Node package manager)
 
 ### Installation
@@ -18,13 +29,13 @@ Make sure you have the following installed:
 1. Clone the repository:
 
    ```
-   git clone https://github.com/yourusername/my-nextjs-app.git
+   git clone https://github.com/yourusername/studysynnc.git
    ```
 
 2. Navigate to the project directory:
 
    ```
-   cd my-nextjs-app
+   cd studysynnc
    ```
 
 3. Install the dependencies:
@@ -57,13 +68,26 @@ After building, you can start the production server with:
 npm start
 ```
 
-### Folder Structure
+## Project Structure
 
-- `src/pages`: Contains the application's pages.
-- `src/components`: Contains reusable components.
-- `src/styles`: Contains global and module-specific styles.
-- `src/api`: Contains API routes.
+- `src/components`: UI components organized by feature
+- `src/contexts`: React context providers for state management
+- `src/models`: TypeScript interfaces and types
+- `src/pages`: Next.js pages and API routes
+- `src/services`: Service classes for data management
+- `src/styles`: Global styles and CSS modules
 
-### License
+## Technologies Used
+
+- Next.js
+- TypeScript
+- Tailwind CSS
+- React Context API
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
 
 This project is licensed under the MIT License. See the LICENSE file for more details.
